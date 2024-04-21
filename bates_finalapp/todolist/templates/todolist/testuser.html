@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <style>
+        body{font-family:Arial,sans-serif;margin:0;padding:0;background-color:#f4f4f4;color:#333}.header{background-color:#3498db;padding:20px 0;text-align:center;color:#fff}.header h1{margin:0;font-size:36px}.login-button{padding:10px 20px;background-color:#2ecc71;color:#fff;border:none;border-radius:4px;cursor:pointer;transition:background-color 0.3s ease}.login-button:hover{background-color:#27ae60}.container{max-width:800px;margin:20px auto;padding:0 20px}.form label{display:block;margin-bottom:10px}.form input[type="text"],.form select{width:calc(100% - 40px);padding:10px;margin-bottom:20px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}.form input[type="submit"]{padding:10px 20px;background-color:#3498db;color:#fff;border:none;border-radius:4px;cursor:pointer;transition:background-color 0.3s ease}.form input[type="submit"]:hover{background-color:#2980b9}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #ddd;padding:12px;text-align:center}th{background-color:#3498db;color:#fff}.red-text{color:#e74c3c;font-weight:bold}.blue-text{color:#3498db;font-weight:bold}.orange-text{color:#e67e22;font-weight:bold}.green-text{color:#2ecc71;font-weight:bold}.delete-button{background-color:#f44336;color:#fff;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;transition:background-color 0.3s ease}.delete-button:hover{background-color:#d32f2f}.key{margin-top:20px;text-align:center}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>To-Do</h1>
+    </div>
+    
+    <div class="container">
+        <form id="taskForm">
+            <label for="day">Day:</label>
+            <select id="day" name="day">
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+            </select><br>
+            <label for="task">Task:</label>
+            <input type="text" id="task" name="task"><br>
+            <label for="importance">Importance:</label>
+            <select id="importance" name="importance">
+                <option value="red">Red</option>
+                <option value="blue">Blue</option>
+                <option value="orange">Orange</option>
+                <option value="green">Green</option>
+            </select><br>
+            <label for="dueDate">Due Date (Day):</label>
+            <input type="text" id="dueDate" name="dueDate"><br>
+            <input type="submit" value="Add Task" class="login-button" style="background-color: #3498db;">
+        </form>
+    </div>
+    
+    <div class="container"> 
+        <h2>Sample User View</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Monday</th>
+                    <th>Tuesday</th>
+                    <th>Wednesday</th>
+                    <th>Thursday</th>
+                    <th>Friday</th>
+                    <th>Saturday</th>
+                    <th>Sunday</th>
+                </tr>
+            </thead>
+            <tbody id="taskBody"></tbody>
+        </table>
+    </div>
+
+    <div class="key">
+        <p>Tasks ranked by importance:</p>
+        <p>Red: Most, Blue: 2nd Most, Orange: 3rd Most, Green: Least</p>
+    </div>
+    <div class="container" style="display: flex; justify-content: flex-end; margin-top: 20px;">
+        <button id="getQuoteButton" class="login-button" style="background-color: #3498db; margin-right: 10px;">Inspirational Quote</button>
+        <button id="logoutButton" class="login-button" style="background-color: #3498db;">Logout</button>
+    </div>
+    <p id="quoteText" style="margin-top: 10px;"></p>
+    <script>
+        document.getElementById("taskForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            addTask();
+        });
+
+        function addTask() {
+            var form = document.getElementById("taskForm");
+            var day = form.elements["day"].value;
+            var task = form.elements["task"].value;
+            var importance = form.elements["importance"].value;
+            var dueDate = form.elements["dueDate"].value;
+            var table = document.getElementById("taskTable");
+            var dayIndex = getDayIndex(day);
+            var tbody = document.getElementById("taskBody");
+
+            if (!tbody.rows[0]) {
+                var newRow = tbody.insertRow(0);
+                for (var i = 0; i < 7; i++) {
+                    newRow.insertCell(i);
+                }
+            }
+
+            var row = tbody.rows[0];
+            var cell = row.cells[dayIndex];
+            var newTaskElement = document.createElement("div");
+            if (dueDate !== "") {
+                newTaskElement.innerHTML = task + ' Due: ' + dueDate + ' <button class="delete-button" onclick="deleteTask(this)">Delete</button>';
+            } else {
+                newTaskElement.innerHTML = task + ' <button class="delete-button" onclick="deleteTask(this)">Delete</button>';
+            }
+            newTaskElement.className = importance + "-text";
+            cell.appendChild(newTaskElement);
+        }
+
+        function deleteTask(button) {
+            var taskToDelete = button.parentNode;
+            taskToDelete.parentNode.removeChild(taskToDelete);
+        }
+
+        function getDayIndex(day) {
+            switch(day) {
+                case "Monday":
+                    return 0;
+                case "Tuesday":
+                    return 1;
+                case "Wednesday":
+                    return 2;
+                case "Thursday":
+                    return 3;
+                case "Friday":
+                    return 4;
+                case "Saturday":
+                    return 5;
+                case "Sunday":
+                    return 6;
+                default:
+                    return -1;
+            }
+        }
+        document.getElementById("getQuoteButton").addEventListener("click", function() {
+            fetch("https://api.quotable.io/random")
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("quoteText").innerText = data.content;
+                })
+                .catch(error => console.log("Error fetching quote: ", error));
+        });
+
+        document.getElementById("logoutButton").addEventListener("click", function() {
+            window.location.href = "testhome.html"; 
+        });
+    </script>
+</body>
+</html>
