@@ -23,7 +23,7 @@ import todolist.urls
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include("django.contrib.auth.urls")),
-    path('index/', include("Watchlist.urls")),
+    path('index/', include("todolist.urls")),
 ]
     
 
