@@ -5,13 +5,10 @@ from django.shortcuts import render
 def index(request): 
     return render(request,"todolist/index.html")
 
-def currentlyWatching(request): 
+def testuserpage(request): 
     context = {}
-    return render(request,"todolist/currentlyWatching.html")
+    return render(request,"todolist/testuserpage.html")
 
-def recommendations(request): 
-    context = {}
-    return render(request,"todolist/recommendations.html")
 
 def login(request): 
     context = {}
